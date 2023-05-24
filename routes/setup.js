@@ -21,16 +21,23 @@ router.post('/', async function (req, res) {
 
     const items = data.data; // access the array of items
 
-    // Check if items is an array before trying to iterate over it
-    if (Array.isArray(items)) {
-      // Populate Items and Categories
-      for (let item of items) {
-        const [category] = await db.Category.findOrCreate({ where: { name: item.category } });
-        await db.Item.create({ ...item, CategoryId: category.id });
-      }
-    } else {
-      return res.status(500).json({ message: "Invalid data from API", data: data });
-    }
+// Check if items is an array before trying to iterate over it
+if (Array.isArray(items)) {
+  // Populate Items and Categories
+  for (let item of items) {
+    const mappedItem = {
+      name: item.item_name, // Map 'item_name' from API to 'name' in the database
+      sku: item.sku, // Map 'sku' from API to 'sku' in the database
+      price: item.price, // Map 'price' from API to 'price' in the database
+      stock: item.stock_quantity // Map 'stock_quantity' from API to 'stock' in the database
+    };
+
+    const [category] = await db.Category.findOrCreate({ where: { name: item.category } });
+    await db.Item.create({ ...mappedItem, CategoryId: category.id });
+  }
+} else {
+  return res.status(500).json({ message: "Invalid data from API", data: data });
+}
 
    // Populate roles
 const roles = ["Admin", "User"];

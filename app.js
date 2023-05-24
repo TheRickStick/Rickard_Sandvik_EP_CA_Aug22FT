@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var setupRouter = require('./routes/setup');
 var categoriesRouter = require('./routes/categories');
+var itemsRouter = require('./routes/items');
 
 
 var app = express();
@@ -25,24 +26,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-db.sequelize.sync().then(() => {
-  db.Role.create({
-      name: 'Admin'
-  }).then(role => {
-      db.User.create({
-          firstName: 'Admin',
-          lastName: 'User',
-          email: 'admin@example.com',
-          password: 'admin',
-          RoleId: role.id
-      });
-  });
-});
+db.sequelize.sync()
 
 app.use('/', indexRouter);
 app.use('/', usersRouter);
 app.use('/setup', setupRouter);
 app.use('/categories', categoriesRouter);
+app.use('/items', itemsRouter);
 
 
 // catch 404 and forward to error handler

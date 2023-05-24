@@ -16,13 +16,20 @@ router.get('/', async (req, res) => {
   router.post('/', authenticateToken, async (req, res) => {
     try {
       const user = req.user;
+      console.log('User:', user); // Log the user object to the console
+  
       if (user.Role.name !== 'Admin') {
         return res.status(403).json({ message: "Only admin can add a category" });
       }
   
+      console.log('Request Body:', req.body); // Log the request body to the console
+  
       const category = await db.Category.create({ name: req.body.name });
+      console.log('Created Category:', category); // Log the created category to the console
+  
       res.status(201).json(category);
     } catch (err) {
+      console.log(err); // Log the error to the console
       res.status(500).json({ message: err.message });
     }
   });

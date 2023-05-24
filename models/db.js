@@ -26,10 +26,10 @@ const Category = sequelize.define('Category', {
 });
 
 const Item = sequelize.define('Item', {
-  name: Sequelize.STRING,
-  description: Sequelize.STRING,
+  sku: Sequelize.STRING,
+  name: Sequelize.STRING, 
   price: Sequelize.DECIMAL,
-  stock: Sequelize.INTEGER
+  stock: Sequelize.INTEGER 
 });
 
 const Cart = sequelize.define('Cart', {

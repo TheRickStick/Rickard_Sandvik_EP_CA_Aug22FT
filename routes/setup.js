@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 var db = require('../models/db');
 
 router.post('/', async function (req, res) {
-  // Check if items exist in the database
+  // Check if items exist 
   const itemsExist = await db.Item.count();
 
   if (itemsExist > 0) {
@@ -12,24 +12,24 @@ router.post('/', async function (req, res) {
   }
 
   try {
-    // Fetch data from Noroff API
+    // Fetch Noroff API
     const fetch = (await import('node-fetch')).default;
     const response = await fetch('http://143.42.108.232:8888/items/stock');
     const data = await response.json();
 
-    console.log("Data from API: ", data); // log data from API
+    console.log("Data from API: ", data); 
 
-    const items = data.data; // access the array of items
+    const items = data.data; 
 
-// Check if items is an array before trying to iterate over it
+// Check array 
 if (Array.isArray(items)) {
-  // Populate Items and Categories
+  // Populate 
   for (let item of items) {
     const mappedItem = {
-      name: item.item_name, // Map 'item_name' from API to 'name' in the database
-      sku: item.sku, // Map 'sku' from API to 'sku' in the database
-      price: item.price, // Map 'price' from API to 'price' in the database
-      stock: item.stock_quantity // Map 'stock_quantity' from API to 'stock' in the database
+      name: item.item_name, 
+      sku: item.sku, 
+      price: item.price, 
+      stock: item.stock_quantity 
     };
 
     const [category] = await db.Category.findOrCreate({ where: { name: item.category } });
@@ -45,11 +45,11 @@ for (let role of roles) {
   await db.Role.findOrCreate({ where: { name: role } });
 }
 
-// Create Admin user if it doesn't exist
+// Create Admin if not exist
 const hashedPassword = await bcrypt.hash('P@ssword2023', 10);
 const [adminRole] = await db.Role.findOrCreate({ where: { name: 'Admin' } });
 
-// Check if Admin user exists, and if not, create one.
+// Check if Admin user exists or create one.
 const [adminUser, created] = await db.User.findOrCreate({
     where: { username: 'admin' },
     defaults: {

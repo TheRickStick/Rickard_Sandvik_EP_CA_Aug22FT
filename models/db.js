@@ -19,7 +19,7 @@ const User = sequelize.define('User', {
       type: Sequelize.INTEGER,
       defaultValue: 0
     }
-  });
+});
 
 const Category = sequelize.define('Category', {
   name: Sequelize.STRING
@@ -37,7 +37,8 @@ const Cart = sequelize.define('Cart', {
 });
 
 const CartItem = sequelize.define('CartItem', {
-  quantity: Sequelize.INTEGER
+  quantity: Sequelize.INTEGER,
+  purchasePrice: Sequelize.DECIMAL
   // ...
 });
 
@@ -59,16 +60,24 @@ Cart.belongsTo(User);
 Category.hasMany(Item);
 Item.belongsTo(Category);
 
-CartItem.belongsTo(Cart);
-CartItem.belongsTo(Item);
-Cart.hasMany(CartItem);
+// Establish the association between Cart and CartItem
+Cart.belongsToMany(Item, { through: CartItem });
+Item.belongsToMany(Cart, { through: CartItem });
 
-Order.belongsTo(User);
 User.hasMany(Order);
+Order.belongsTo(User);
 
 OrderItem.belongsTo(Order);
 OrderItem.belongsTo(Item);
 Order.hasMany(OrderItem);
+
+// Establish the association between Cart and CartItem
+Cart.hasMany(CartItem);
+CartItem.belongsTo(Cart);
+
+// Establish the association between Item and CartItem
+Item.hasMany(CartItem); // Add this line
+CartItem.belongsTo(Item); // Add this line
 
 module.exports = {
   Role,

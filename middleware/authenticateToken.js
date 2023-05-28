@@ -1,17 +1,23 @@
 const jwt = require('jsonwebtoken');
 const db = require('../models/db');
 
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (token == null) return res.sendStatus(401); // if there isn't any token
+  if (token == null) {
+    // Guest user, set req.user to null
+    req.user = null;
+    return next();
+  }
+  console.log('Auth Header:', authHeader);
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+    console.log('Decoded Token:', decodedToken);
     if (err) return res.sendStatus(403);
 
     try {
-      const user = await db.User.findByPk(decodedToken.id, { include: db.Role });
+      const user = await db.User.findByPk(decodedToken.id, { include: db.Cart, include: db.Role });
       if (!user || !user.Role) return res.sendStatus(403);
 
       req.user = user;
@@ -21,6 +27,7 @@ function authenticateToken(req, res, next) {
 
       next(); // pass the execution off to whatever request the client intended
     } catch (err) {
+      console.log('Error:', err);
       res.status(500).json({ message: err.message });
     }
   });

@@ -13,6 +13,8 @@ var categoryRouter = require('./routes/category');
 var itemRouter = require('./routes/item');
 var itemsRouter = require('./routes/items');
 var cartRouter = require('./routes/cart');
+var allCartsRouter = require('./routes/allcarts');
+var cartItemRouter = require('./routes/cartItem');
 var searchRouter = require('./routes/search');
 
 
@@ -40,6 +42,8 @@ app.use('/category', categoryRouter);
 app.use('/item', itemRouter); 
 app.use('/items', itemsRouter);
 app.use('/cart', cartRouter);
+app.use('/allcarts', allCartsRouter);
+app.use('/cart_item', cartItemRouter);
 app.use('/search', searchRouter);
 
 

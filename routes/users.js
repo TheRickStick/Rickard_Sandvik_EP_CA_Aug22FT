@@ -53,6 +53,7 @@ router.post('/signup', async (req, res) => {
   // Create new user
  // Find the "User" role
  const userRole = await db.Role.findOne({ where: { name: "User" } });
+ console.log('UserRole:', userRole);
 
  // Create new user with the "User" role
  const newUser = await db.User.create({ username, password: hashedPassword, email, firstName, lastName, RoleId: userRole.id });

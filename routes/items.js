@@ -1,15 +1,29 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../models/db');
+var authenticateToken = require('../middleware/authenticateToken'); 
 
 // GET /items
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const { User } = req;
-    const items = await db.Item.findAll({ include: db.Category });
+    const { user } = req; 
 
-    // Filter items based on user type
-    const filteredItems = User ? items : items.filter(item => item.stock > 0);
+    // Retrieve items with their categories
+    const items = await db.Item.findAll({
+      attributes: ['name', 'price', 'stock'], 
+      include: db.Category 
+    });
+
+    // Filter items 
+    const filteredItems = items.filter(item => {
+      if (!user) {
+        // Guest user
+        return item.stock > 0;
+      }
+
+      // Logged-in user
+      return true;
+    });
 
     res.json(filteredItems);
   } catch (err) {
@@ -18,3 +32,4 @@ router.get('/', async (req, res) => {
 });
 
 module.exports = router;
+

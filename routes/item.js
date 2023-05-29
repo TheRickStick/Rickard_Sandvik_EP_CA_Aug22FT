@@ -3,15 +3,7 @@ var router = express.Router();
 var db = require('../models/db');
 var authenticateToken = require('../middleware/authenticateToken'); 
 
-// GET /items
-router.get('/', async (req, res) => {
-  try {
-    const items = await db.Item.findAll({ include: db.Category });
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+
 
 // POST /item
 router.post('/', authenticateToken, async (req, res) => {
@@ -25,7 +17,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
     console.log('Request Body:', req.body);
 
-    const { name, sku, price, stock, categoryId } = req.body;
+    const { name, sku, price, stock, img_url, categoryId } = req.body;
 
     const category = await db.Category.findByPk(categoryId);
     if (!category) {
@@ -37,6 +29,7 @@ router.post('/', authenticateToken, async (req, res) => {
       sku,
       price,
       stock,
+      img_url,
       CategoryId: category.id
     });
 
@@ -58,7 +51,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     const itemId = req.params.id;
-    const { name, sku, price, stock, categoryId } = req.body;
+    const { name, sku, price, stock, img_url, categoryId } = req.body;
 
     const item = await db.Item.findByPk(itemId);
     if (!item) {
@@ -75,6 +68,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       sku,
       price,
       stock,
+      img_url,
       CategoryId: category.id
     });
 

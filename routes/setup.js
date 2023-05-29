@@ -29,7 +29,8 @@ if (Array.isArray(items)) {
       name: item.item_name, 
       sku: item.sku, 
       price: item.price, 
-      stock: item.stock_quantity 
+      stock: item.stock_quantity,
+      img_url: item.img_url, 
     };
 
     const [category] = await db.Category.findOrCreate({ where: { name: item.category } });

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('../middleware/authenticateToken'); // Remove curly braces
+const authenticateToken = require('../middleware/authenticateToken'); 
 const db = require('../models/db');
 
 router.get('/', authenticateToken, async (req, res) => {
@@ -8,13 +8,13 @@ router.get('/', authenticateToken, async (req, res) => {
     const user = req.user;
     console.log('User:', user);
 
-    // Retrieve the cart for the logged-in user
+    // Retrieve cart for logged-in user
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
       include: [
         {
           model: db.Item,
-          through: { attributes: ['quantity'] } // Include the quantity from the CartItem model
+          through: { attributes: ['quantity'] } 
         }
       ]
     });

@@ -29,7 +29,8 @@ const Item = sequelize.define('Item', {
   sku: Sequelize.STRING,
   name: Sequelize.STRING, 
   price: Sequelize.DECIMAL,
-  stock: Sequelize.INTEGER 
+  stock: Sequelize.INTEGER,
+  img_url: Sequelize.STRING,
 });
 
 const Cart = sequelize.define('Cart', {

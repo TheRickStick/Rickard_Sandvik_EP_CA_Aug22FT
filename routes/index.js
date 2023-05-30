@@ -91,7 +91,7 @@ router.get('/allorders', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
 
-    if (!user.isAdmin) {
+    if (user.Role.name !== 'Admin') {
       return res.status(403).json({ message: 'Access denied' });
     }
 

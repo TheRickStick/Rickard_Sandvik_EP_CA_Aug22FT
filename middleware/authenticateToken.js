@@ -17,7 +17,7 @@ async function authenticateToken(req, res, next) {
     if (err) return res.sendStatus(403);
 
     try {
-      const user = await db.User.findByPk(decodedToken.id, { include: db.Cart, include: db.Role });
+      const user = await db.User.findByPk(decodedToken.id, { include: [db.Cart, db.Role] });
       if (!user || !user.Role) return res.sendStatus(403);
 
       req.user = user;

@@ -73,11 +73,13 @@ router.post('/', authenticateToken, async (req, res) => {
           .json({ message: 'Not enough stock available', availableStock: item.stock });
       }
 
+      //Uncomment here if you would like to update the stock of the item in the items table when adding items to the cart
+      /*
       const quantityDifference = newQuantity - existingCartItem.quantity;
 
-      // Update the stock of the item
       item.stock -= quantityDifference;
       await item.save();
+      */
 
       existingCartItem.quantity = newQuantity;
       await existingCartItem.save();
@@ -94,9 +96,11 @@ router.post('/', authenticateToken, async (req, res) => {
       quantity: req.body.quantity || 1, // Default quantity is 1
     });
 
-    // Update the stock of the item in the items table
+    //Uncomment here if you would like to update the stock of the item in the items table when adding items to the cart
+    /*
     item.stock -= req.body.quantity;
     await item.save();
+    */
 
     console.log('Cart Item:', cartItem);
     res.status(201).json(cartItem);
@@ -146,6 +150,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
+    //uncomment here as well if you would like to update the stock of the item in the items table when adding items to the cart
+    /*
     // Calculate the difference in quantity
     const quantityDifference = quantity - cartItem.quantity;
 
@@ -162,6 +168,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     // Update the stock of the new item in the items table
     item.stock -= quantity;
     await item.save();
+    */
 
     // Update the itemId and quantity of the cart item
     cartItem.ItemId = itemId;

@@ -61,7 +61,7 @@ Cart.belongsTo(User);
 Category.hasMany(Item);
 Item.belongsTo(Category);
 
-// Establish the association between Cart and CartItem
+// Cart and CartItem
 Cart.belongsToMany(Item, { through: CartItem });
 Item.belongsToMany(Cart, { through: CartItem });
 
@@ -72,13 +72,13 @@ OrderItem.belongsTo(Order);
 OrderItem.belongsTo(Item);
 Order.hasMany(OrderItem);
 
-// Establish the association between Cart and CartItem
+// Cart and CartItem
 Cart.hasMany(CartItem);
 CartItem.belongsTo(Cart);
 
-// Establish the association between Item and CartItem
-Item.hasMany(CartItem); // Add this line
-CartItem.belongsTo(Item); // Add this line
+//  Item and CartItem
+Item.hasMany(CartItem); 
+CartItem.belongsTo(Item);
 
 module.exports = {
   Role,

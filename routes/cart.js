@@ -53,15 +53,17 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // Transfer items back to stock
+    // If you would like to use the function of substraction of stock when the cart is deleted, uncomment the following code
+    // This has to be uncommented if you uncomment the code in cartitem.js
+  /*
     for (const cartItem of cart.CartItems) {
       const { Item } = cartItem;
 
-      // Transfer only the quantity of each cart item back to stock
+
       Item.stock += cartItem.quantity;
       await Item.save();
     }
-
+*/
     // Delete all cart items associated with the cart ID
     await db.CartItem.destroy({
       where: { CartId: id },

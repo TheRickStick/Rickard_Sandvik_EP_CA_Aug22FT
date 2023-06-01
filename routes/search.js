@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
         include: [{ model: db.Category }],
       });
   
-      res.json(items);
+      res.json({ items: items });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: err.message });

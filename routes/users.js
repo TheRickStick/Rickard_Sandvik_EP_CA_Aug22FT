@@ -62,35 +62,49 @@ router.post('/signup', async (req, res) => {
 });
 
 function isValidEmail(email) {
-  // Regex for email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
   return emailRegex.test(email);
 }
 
-
-// User login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // Find user
   const user = await db.User.findOne({ where: { username } });
   if (!user) {
     return res.status(400).json({ message: "User not found" });
   }
 
-  // Check password
 const match = await bcrypt.compare(password, user.password);
 if (!match) {
     return res.status(400).json({ message: "Incorrect password" });
 }
 
-// Generate a token
 const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
 return res.status(200).json({ message: "User successfully logged in", data: { token } });
 
 
+});
+
+// DELETE /user/:id - delete a user
+router.delete('/user/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await db.User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await user.destroy();
+
+    return res.status(200).json(); 
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred while deleting the user' });
+  }
 });
 
 module.exports = router;

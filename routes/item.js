@@ -35,7 +35,10 @@ router.post('/', authenticateToken, async (req, res) => {
 
     console.log('Created Item:', newItem); 
 
-    res.status(201).json(newItem);
+    res.status(201).json({
+      message: 'Item created successfully',
+      item: newItem
+    });
   } catch (err) {
     console.log(err); 
     res.status(500).json({ message: err.message });

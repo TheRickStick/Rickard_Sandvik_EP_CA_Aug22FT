@@ -86,9 +86,10 @@ if (!match) {
 }
 
 // Generate a token
-const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
-return res.status(200).json({ message: "User successfully logged in", token });
+return res.status(200).json({ message: "User successfully logged in", data: { token } });
+
 
 });
 

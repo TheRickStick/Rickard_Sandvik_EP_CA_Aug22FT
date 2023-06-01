@@ -1,26 +1,45 @@
 const request = require('supertest');
-const app = require('../app.js');
+const app = require('../app');
 const db = require('../models/db');
 
-describe('API Endpoint Tests', () => {
-  beforeAll(async () => {
-    // Delete all existing data from the tables
-    await db.Item.destroy({ where: {} });
-    await db.Category.destroy({ where: {} });
-    await db.Role.destroy({ where: {} });
-    await db.User.destroy({ where: {} });
+
+describe('User Registration and Login', () => {
+  let token;
+
+  test('POST /signup - success', async () => {
+    const user = {
+      username: 'john_doe',
+      password: 'P@ssword123',
+      email: 'john.doe@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+    };
+
+    const response = await request(app)
+      .post('/signup')
+      .send(user)
+      .expect(201)
+      .expect('Content-Type', /json/);
+
+    expect(response.body).toHaveProperty('message', 'User successfully registered');
+    expect(response.body).toHaveProperty('userId');
   });
 
-  test('POST /setup should check if database is populated, make API call, and populate empty database', async () => {
-    // Increase the timeout to 20 seconds (20000 milliseconds)
-    jest.setTimeout(20000);
+  test('POST /login - success', async () => {
+    const credentials = {
+      username: 'john_doe',
+      password: 'P@ssword123',
+    };
 
-    // Make API call to check if database is populated
-    const checkResponse = await request(app).post('/setup');
-    expect(checkResponse.status).toBe(200);
+    const response = await request(app)
+      .post('/login')
+      .send(credentials)
+      .expect(200)
+      .expect('Content-Type', /json/);
 
-    // Make API call to populate empty database
-    const populateResponse = await request(app).post('/setup');
-    expect(populateResponse.status).toBe(200);
+    const { data } = response.body;
+    expect(data).toHaveProperty('token');
+    token = data.token;
+    console.log(token);
   });
 });

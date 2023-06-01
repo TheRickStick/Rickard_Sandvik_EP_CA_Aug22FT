@@ -4,8 +4,10 @@ var bcrypt = require('bcrypt');
 var db = require('../models/db');
 
 router.post('/', async function (req, res) {
-  // Check if items exist 
+
+  console.log('Before itemsExist check');
   const itemsExist = await db.Item.count();
+  console.log('Items exist:', itemsExist);
 
   if (itemsExist > 0) {
     return res.status(409).json({ message: "Database already populated" });

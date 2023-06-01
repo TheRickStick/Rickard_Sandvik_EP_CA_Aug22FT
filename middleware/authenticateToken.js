@@ -6,7 +6,7 @@ async function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (token == null) {
-    // Guest user, set req.user to null
+    // Guest user
     req.user = null;
     return next();
   }
@@ -25,7 +25,7 @@ async function authenticateToken(req, res, next) {
         req.isAdmin = true;
       }
 
-      next(); // pass the execution off to whatever request the client intended
+      next(); 
     } catch (err) {
       console.log('Error:', err);
       res.status(500).json({ message: err.message });

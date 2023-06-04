@@ -3,7 +3,6 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authenticateToken');
 const db = require('../models/db');
 
-// POST /order/:id - Place an order for a specific item
 router.post('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
@@ -80,23 +79,19 @@ router.post('/:id', authenticateToken, async (req, res) => {
       OrderId: order.id,
       ItemId: item.id,
       purchasePrice: purchasePrice,
-      quantity: quantity, 
-      discount: discount, 
-      totalPrice: totalPrice, 
+      quantity: quantity,
+      discount: discount,
+      totalPrice: totalPrice,
     });
-    orderItem.price = purchasePrice;
-orderItem.discount = discount;
-orderItem.totalPrice = totalPrice;
-    console.log('Order Item:', orderItem);
+
+     // Delete the cart item
+     await cartItem.destroy();
 
     // Update the stock of the item in the items table
     item.stock -= quantity; // Use the fetched quantity
     await item.save();
 
-    // Include the price in the response
-    orderItem.price = purchasePrice;
-
-    res.status(201).json({ orderItem });
+    res.status(201).json({ orderItem, price: totalPrice, discount: discount });
   } catch (err) {
     console.log('Error:', err);
     res.status(500).json({ message: 'An error occurred while processing the order' });

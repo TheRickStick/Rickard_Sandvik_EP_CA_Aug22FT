@@ -120,6 +120,18 @@ router.put('/:id', authenticateToken, async (req, res) => {
     order.status = status;
     await order.save();
 
+     // If the order is cancelled, return the items to stock
+     if (status === 'Cancelled') {
+      const orderItems = await db.OrderItem.findAll({ where: { OrderId: orderId } });
+
+      // Update the stock of each item in the order
+      for (const orderItem of orderItems) {
+        const item = await db.Item.findByPk(orderItem.ItemId);
+        item.stock += orderItem.quantity;
+        await item.save();
+      }
+    }
+
     res.json(order);
   } catch (err) {
     console.log('Error:', err);

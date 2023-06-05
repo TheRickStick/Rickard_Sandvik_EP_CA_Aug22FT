@@ -3,12 +3,38 @@ const app = require('../app');
 const db = require('../models/db');
 
 
+describe('POST /setup', () => {
+  beforeEach(async () => {
+    await db.sequelize.sync();
+  });
+
+  test('Checks if database is populated, makes API call to Noroff API, and populates empty database', async () => {
+    const response = await request(app).post('/setup');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ message: 'Database successfully populated' });
+  });
+
+  test('Checks if database is populated, if populated return', async () => {
+
+   
+    const response = await request(app).post('/setup');
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toEqual({ message: 'Database already populated' });
+  });
+});
+
+
 describe('User Registration and Login', () => {
   let userToken;
   let adminToken;
   let categoryId;
   let itemId;
   let userId;
+
 
   test('POST /signup - success', async () => {
     const user = {
@@ -27,7 +53,7 @@ describe('User Registration and Login', () => {
   
     expect(response.body).toHaveProperty('message', 'User successfully registered');
     expect(response.body).toHaveProperty('userId');
-    userId = response.body.userId; // Assign userId here
+    userId = response.body.userId; 
   });
   
   
@@ -67,6 +93,7 @@ describe('User Registration and Login', () => {
     console.log('Admin Token:', adminToken);
   });
 
+  describe('Category and Item Creation', () => {
   test('POST /category - create a new category with the name CAT_TEST', async () => {
     const category = {
       name: 'CAT_TEST',
@@ -81,8 +108,10 @@ describe('User Registration and Login', () => {
   
     expect(response.body).toHaveProperty('message', 'Category created successfully');
     expect(response.body).toHaveProperty('category');
-    categoryId = response.body.category.id; // Assign categoryId here
+    categoryId = response.body.category.id; 
   });
+
+
 
   test('POST /item - create a new item with the CAT_TEST category and the ITEM_TEST item name', async () => {
     const item = {
@@ -104,7 +133,9 @@ describe('User Registration and Login', () => {
     expect(response.body).toHaveProperty('item');
     itemId = response.body.item.id;
   });
+});
 
+describe('Search', () => {
   test('POST /search - search for items with the text “mart” in the item name', async () => {
     const searchQuery = {
       itemName: 'mart',
@@ -136,7 +167,9 @@ describe('User Registration and Login', () => {
     expect(response.body).toHaveProperty('items');
     expect(response.body.items.length).toEqual(1);
   });
+});
 
+describe('Deletion', () => {
   test('DELETE /user/:id - delete the user', async () => {
     await request(app)
       .delete(`/user/${userId}`)
@@ -157,7 +190,9 @@ describe('User Registration and Login', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
   });
+});
 
+describe('Database Already Populated', () => {
   test('POST /setup - Database already populated', async () => {
     const response = await request(app)
       .post('/setup')
@@ -167,3 +202,6 @@ describe('User Registration and Login', () => {
     expect(response.body).toHaveProperty('message', 'Database already populated');
   }, 30000);
 });
+});
+
+

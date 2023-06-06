@@ -1,0 +1,3 @@
+Before running test please run "npm start" first. 
+This is to ensure all the tables have been created. 
+After this has been done you can run the tests with the "npm test" command. 

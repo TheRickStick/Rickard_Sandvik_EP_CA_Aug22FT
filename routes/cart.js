@@ -3,22 +3,24 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authenticateToken'); 
 const db = require('../models/db');
 
+// Retrieve cart for logged-in user
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
-    console.log('User:', user);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
-    // Retrieve cart for logged-in user
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
       include: [
         {
           model: db.Item,
-          through: { attributes: ['quantity'] } 
-        }
-      ]
+          through: { attributes: ['quantity'] },
+        },
+      ],
     });
-    console.log('Cart:', cart);
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -27,15 +29,19 @@ router.get('/', authenticateToken, async (req, res) => {
     res.json(cart);
   } catch (err) {
     console.log('Error:', err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'An error occurred while retrieving the cart' });
   }
 });
+    
 
 // DELETE /cart/:id
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     console.log('User:', user);
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
     const { id } = req.params;
     console.log('Cart ID:', id);
@@ -53,17 +59,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // If you would like to use the function of substraction of stock when the cart is deleted, uncomment the following code
-    // This has to be uncommented if you uncomment the code in cartitem.js
-  /*
-    for (const cartItem of cart.CartItems) {
-      const { Item } = cartItem;
 
-
-      Item.stock += cartItem.quantity;
-      await Item.save();
-    }
-*/
     // Delete all cart items associated with the cart ID
     await db.CartItem.destroy({
       where: { CartId: id },

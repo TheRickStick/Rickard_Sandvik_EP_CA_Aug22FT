@@ -7,6 +7,9 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     console.log('User:', user);
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
     const { itemId, purchasePrice } = req.body;
     console.log('Request Body:', req.body);
@@ -35,7 +38,7 @@ router.post('/', authenticateToken, async (req, res) => {
         CartId: newCart.id,
         ItemId: item.id,
         purchasePrice: item.price,
-        quantity: req.body.quantity || 1, // Default quantity is 1
+        quantity: req.body.quantity || 1, // Default 1
       });
 
       console.log('Cart Item:', cartItem);
@@ -63,23 +66,15 @@ router.post('/', authenticateToken, async (req, res) => {
     });
 
     if (existingCartItem) {
-      // Item already exists in the cart, update the quantity instead of creating a new cart item
+      // Item  exists in cart, update the quantity 
       const newQuantity = existingCartItem.quantity + (req.body.quantity || 1);
 
-      // Check if the updated quantity exceeds the available stock
+      // Check the updated quantity exceeds stock
       if (newQuantity > item.stock) {
         return res
           .status(400)
           .json({ message: 'Not enough stock available', availableStock: item.stock });
       }
-
-      //Uncomment here if you would like to update the stock of the item in the items table when adding items to the cart
-      /*
-      const quantityDifference = newQuantity - existingCartItem.quantity;
-
-      item.stock -= quantityDifference;
-      await item.save();
-      */
 
       existingCartItem.quantity = newQuantity;
       await existingCartItem.save();
@@ -93,14 +88,9 @@ router.post('/', authenticateToken, async (req, res) => {
       CartId: cart.id,
       ItemId: item.id,
       purchasePrice: item.price,
-      quantity: req.body.quantity || 1, // Default quantity is 1
+      quantity: req.body.quantity || 1, // Default 1
     });
 
-    //Uncomment here if you would like to update the stock of the item in the items table when adding items to the cart
-    /*
-    item.stock -= req.body.quantity;
-    await item.save();
-    */
 
     console.log('Cart Item:', cartItem);
     res.status(201).json(cartItem);
@@ -116,6 +106,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     console.log('User:', user);
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
     const { id } = req.params;
     console.log('Cart Item ID:', id);
@@ -150,25 +143,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    //uncomment here as well if you would like to update the stock of the item in the items table when adding items to the cart
-    /*
-    // Calculate the difference in quantity
-    const quantityDifference = quantity - cartItem.quantity;
-
-    // Check if the updated quantity exceeds the available stock
-    if (quantityDifference > item.stock) {
-      return res.status(400).json({ message: 'Not enough stock' });
-    }
-
-    // Update the stock of the previous item in the items table
-    const previousItem = await db.Item.findByPk(cartItem.ItemId);
-    previousItem.stock += cartItem.quantity;
-    await previousItem.save();
-
-    // Update the stock of the new item in the items table
-    item.stock -= quantity;
-    await item.save();
-    */
 
     // Update the itemId and quantity of the cart item
     cartItem.ItemId = itemId;
@@ -183,18 +157,14 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
 // DELETE /cart_item/:id
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     console.log('User:', user);
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
     const { id } = req.params;
     console.log('Cart Item ID:', id);

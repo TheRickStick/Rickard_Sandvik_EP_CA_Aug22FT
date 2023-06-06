@@ -8,15 +8,11 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var setupRouter = require('./routes/setup');
-//var categoriesRouter = require('./routes/categories');
 var categoryRouter = require('./routes/category');
 var itemRouter = require('./routes/item');
-//var itemsRouter = require('./routes/items');
 var cartRouter = require('./routes/cart');
-//var allCartsRouter = require('./routes/allcarts');
 var cartItemRouter = require('./routes/cartItem');
 var searchRouter = require('./routes/search');
-//var ordersRouter = require('./routes/orders');
 var orderRouter = require('./routes/order');
 
 
@@ -39,15 +35,11 @@ db.sequelize.sync()
 app.use('/', indexRouter);
 app.use('/', usersRouter);
 app.use('/setup', setupRouter);
-//app.use('/categories', categoriesRouter);
 app.use('/category', categoryRouter);
 app.use('/item', itemRouter); 
-//app.use('/items', itemsRouter);
 app.use('/cart', cartRouter);
-//app.use('/allcarts', allCartsRouter);
 app.use('/cart_item', cartItemRouter);
 app.use('/search', searchRouter);
-//app.use('/orders', ordersRouter);
 app.use('/order', orderRouter);
 
 

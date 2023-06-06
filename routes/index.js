@@ -12,6 +12,9 @@ router.get('/', function(req, res, next) {
 router.get('/allcarts', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: 'You must be logged in to view this' });
+    }
 
     // Only allow Admin user to access this endpoint
     if (user.Role.name !== 'Admin') {
@@ -29,6 +32,7 @@ router.get('/allcarts', authenticateToken, async (req, res) => {
   }
 });
 
+//Get /categories
 router.get('/categories', async (req, res) => {
   try {
     const categories = await db.Category.findAll();
@@ -66,7 +70,7 @@ router.get('/items', authenticateToken, async (req, res) => {
   }
 });
 
-// Fetch orders for the logged-in user
+// GET orders 
 router.get('/orders', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
@@ -95,7 +99,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
     });
 
     const processedOrders = orders.map((order) => {
-      if (order.status === 'Completed') {
+      if (order.status === 'Complete') {
         return {
           id: order.id,
           status: order.status,
@@ -139,7 +143,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
 
 
 
-// Fetch all orders for the admin user
+// GET all orders
 router.get('/allorders', authenticateToken, async (req, res) => {
   try {
     const user = req.user;

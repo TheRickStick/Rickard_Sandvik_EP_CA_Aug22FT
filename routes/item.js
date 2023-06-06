@@ -11,7 +11,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const user = req.user;
     console.log('User:', user); 
 
-    if (user.Role.name !== 'Admin') {
+    if (!user || user.Role.name !== 'Admin') {
       return res.status(403).json({ message: "Only admin can add an item" });
     }
 
@@ -49,7 +49,7 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
-    if (user.Role.name !== 'Admin') {
+    if (!user || user.Role.name !== 'Admin') {
       return res.status(403).json({ message: "Only admin can update an item" });
     }
 
@@ -85,7 +85,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
-    if (user.Role.name !== 'Admin') {
+    if (!user || user.Role.name !== 'Admin') {
       return res.status(403).json({ message: "Only admin can delete an item" });
     }
 

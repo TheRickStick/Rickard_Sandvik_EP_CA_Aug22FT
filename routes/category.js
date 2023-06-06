@@ -3,6 +3,7 @@ var router = express.Router();
 var db = require('../models/db');
 var authenticateToken = require('../middleware/authenticateToken'); 
 
+//POST /category
 router.post('/', authenticateToken, async (req, res) => {
   try {
     if (!req.user) {
@@ -26,6 +27,7 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
   
+  // PUT /category/:id
   router.put('/:id', authenticateToken, async (req, res) => {
     try {
       if (!req.user) {
@@ -41,6 +43,12 @@ router.post('/', authenticateToken, async (req, res) => {
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }
+
+      const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: "Category name is required" });
+    }
   
       await category.update({ name: req.body.name });
       res.json(category);
@@ -49,6 +57,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
   });
   
+  //DELETE /category/:id
   router.delete('/:id', authenticateToken, async (req, res) => {
     try {
       if (!req.user) {

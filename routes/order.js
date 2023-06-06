@@ -11,7 +11,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
     // Check if the user already has a cart
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
-      include: [db.User], // Include the associated User model to access user.email
+      include: [db.User], 
     });
 
     // Check if the cart exists
@@ -28,7 +28,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Item not found in cart' });
     }
 
-    const quantity = cartItem.quantity; // Fetch the quantity from the cartItem
+    const quantity = cartItem.quantity; 
 
     // Find the item by itemId
     const item = await db.Item.findByPk(itemId);
@@ -55,11 +55,11 @@ router.post('/:id', authenticateToken, async (req, res) => {
     let discount = 0;
 
     if (usersWithSameEmail === 2) {
-      discount = 0.1; // 10% discount
+      discount = 0.1; 
     } else if (usersWithSameEmail === 3) {
-      discount = 0.3; // 30% discount
+      discount = 0.3; 
     } else if (usersWithSameEmail >= 4) {
-      discount = 0.4; // 40% discount
+      discount = 0.4; 
     }
 
     // Calculate the purchase price with discount
@@ -88,7 +88,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
      await cartItem.destroy();
 
     // Update the stock of the item in the items table
-    item.stock -= quantity; // Use the fetched quantity
+    item.stock -= quantity; 
     await item.save();
 
     res.status(201).json({ orderItem, price: totalPrice, discount: discount });
@@ -98,7 +98,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// PUT /order/:id - Update order status (accessible only to Admin User)
+// PUT /order/:id - Update order status (only Admin User)
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
@@ -107,6 +107,12 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     if (user.Role.name !== 'Admin') {
       return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Check if the provided status is valid
+    const validStatuses = ['In Process', 'Complete', 'Cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status, Please Use In Process, Complete or Cancelled' });
     }
 
     // Find the order by orderId
@@ -120,8 +126,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
     order.status = status;
     await order.save();
 
-     // If the order is cancelled, return the items to stock
-     if (status === 'Cancelled') {
+    // If the order is cancelled, return the items to stock
+    if (status === 'Cancelled') {
       const orderItems = await db.OrderItem.findAll({ where: { OrderId: orderId } });
 
       // Update the stock of each item in the order
@@ -138,6 +144,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 module.exports = router;
 

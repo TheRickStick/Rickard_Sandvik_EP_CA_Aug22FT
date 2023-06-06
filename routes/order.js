@@ -106,7 +106,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { status } = req.body;
 
     if (user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: 'Only admin can update an order' });
     }
 
     // Check if the provided status is valid

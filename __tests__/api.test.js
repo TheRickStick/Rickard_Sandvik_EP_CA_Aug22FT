@@ -169,6 +169,123 @@ describe('Search', () => {
   });
 });
 
+describe('User Endpoints', () => {
+  let userToken;
+  let itemId;
+  let orderId;
+
+  beforeAll(async () => {
+    // Login as a regular user to obtain the token
+    const credentials = {
+      username: 'john_doe',
+      password: 'P@ssword123',
+    };
+
+    const response = await request(app)
+      .post('/login')
+      .send(credentials)
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    const { data } = response.body;
+    expect(data).toHaveProperty('token');
+    userToken = data.token;
+    console.log('User Token:', userToken);
+  });
+
+  describe('PUT /item/:id', () => {
+    test('Update item with valid data (forbidden)', async () => {
+      const updatedItem = {
+        name: 'Updated Item',
+        sku: 'UPDATED_SKU',
+        price: 999,
+        stock: 50,
+        img_url: 'https://example.com/updated_item.png',
+        categoryId: 1, // Replace with the actual category ID
+      };
+
+      const response = await request(app)
+        .put(`/item/${itemId}`)
+        .send(updatedItem)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403)
+        .expect('Content-Type', /json/);
+
+      const { message } = response.body;
+      expect(message).toBe('Only admin can update an item');
+    });
+
+    test('Update non-existent item (forbidden)', async () => {
+      const updatedItem = {
+        name: 'Updated Item',
+        sku: 'UPDATED_SKU',
+        price: 999,
+        stock: 50,
+        img_url: 'https://example.com/updated_item.png',
+        categoryId: 1, // Replace with the actual category ID
+      };
+
+      const response = await request(app)
+        .put('/item/999')
+        .send(updatedItem)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403)
+        .expect('Content-Type', /json/);
+
+      const { message } = response.body;
+      expect(message).toBe('Only admin can update an item');
+    });
+  });
+
+  describe('PUT /order/:id', () => {
+    test('Update order with valid data (forbidden)', async () => {
+      const updatedOrder = {
+        status: 'Complete',
+      };
+
+      const response = await request(app)
+        .put(`/order/${orderId}`)
+        .send(updatedOrder)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403)
+        .expect('Content-Type', /json/);
+
+      const { message } = response.body;
+      expect(message).toBe('Only admin can update an order');
+    });
+
+    test('Update non-existent order (forbidden)', async () => {
+      const updatedOrder = {
+        status: 'Complete',
+      };
+
+      const response = await request(app)
+        .put('/order/999')
+        .send(updatedOrder)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403)
+        .expect('Content-Type', /json/);
+
+      const { message } = response.body;
+      expect(message).toBe('Only admin can update an order');
+    });
+  });
+
+  describe('GET /allcarts', () => {
+    test('Access allcarts as a regular user (forbidden)', async () => {
+      const response = await request(app)
+        .get('/allcarts')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403)
+        .expect('Content-Type', /json/);
+
+      const { message } = response.body;
+      expect(message).toBe('Access denied');
+    });
+  });
+});
+
+
 describe('Deletion', () => {
   test('DELETE /user/:id - delete the user', async () => {
     await request(app)

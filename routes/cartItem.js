@@ -120,16 +120,25 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
 
 
 // DELETE /cart_item/:id
-router.delete('/:id', authenticateToken, isAdmin, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
   
     const { id } = req.params;
+    const user = req.user;
+  
+    const cart = await db.Cart.findOne({
+      where: { UserId: user.id },
+    });
+  
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
   
     const cartItem = await db.CartItem.findOne({
-      where: { ItemId: id },
+      where: { ItemId: id, CartId: cart.id },
     });
   
     if (!cartItem) {
@@ -148,6 +157,7 @@ router.delete('/:id', authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 

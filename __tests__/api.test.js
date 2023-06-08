@@ -220,7 +220,7 @@ describe('Using User on Admin Endpoints', () => {
         .expect('Content-Type', /json/);
 
       const { message } = response.body;
-      expect(message).toBe('Only admin can update an item');
+      expect(message).toBe('Only admin can perform this action');
     });
   });
 
@@ -238,7 +238,7 @@ describe('Using User on Admin Endpoints', () => {
         .expect('Content-Type', /json/);
 
       const { message } = response.body;
-      expect(message).toBe('Only admin can update an order');
+      expect(message).toBe('Only admin can perform this action');
     });
   });
 
@@ -251,7 +251,7 @@ describe('Using User on Admin Endpoints', () => {
         .expect('Content-Type', /json/);
 
       const { message } = response.body;
-      expect(message).toBe('Access denied');
+      expect(message).toBe('Only admin can perform this action');
     });
   });
 });

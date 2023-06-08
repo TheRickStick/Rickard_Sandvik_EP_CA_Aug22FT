@@ -1,21 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-const authenticateToken = require('../middleware/authenticateToken'); 
-
-
+const authenticateToken = require('../middleware/authenticateToken');
+const isAdmin = require('../middleware/isAdmin'); 
 
 // POST /item
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const user = req.user;
-    console.log('User:', user); 
-
-    if (!user || user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: "Only admin can add an item" });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
-
-    console.log('Request Body:', req.body);
 
     const { name, sku, price, stock, img_url, categoryId } = req.body;
 
@@ -33,24 +27,20 @@ router.post('/', authenticateToken, async (req, res) => {
       CategoryId: category.id
     });
 
-    console.log('Created Item:', newItem); 
-
     res.status(201).json({
       message: 'Item created successfully',
       item: newItem
     });
   } catch (err) {
-    console.log(err); 
     res.status(500).json({ message: err.message });
   }
 });
 
 // PUT /item/:id
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const user = req.user;
-    if (!user || user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: "Only admin can update an item" });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
 
     const itemId = req.params.id;
@@ -82,11 +72,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // DELETE /item/:id
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const user = req.user;
-    if (!user || user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: "Only admin can delete an item" });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
 
     const itemId = req.params.id;

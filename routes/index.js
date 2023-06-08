@@ -67,6 +67,9 @@ router.get('/items', authenticateToken, async (req, res) => {
 
 // GET orders 
 router.get('/orders', authenticateToken, async (req, res) => {
+  if (req.authError) {
+    return res.status(401).json({ message: req.authError });
+  }
   try {
     const user = req.user;
 
@@ -94,7 +97,8 @@ router.get('/orders', authenticateToken, async (req, res) => {
     });
 
     const processedOrders = orders.map((order) => {
-      if (order.status === 'Complete') {
+      if (order.status === 'Completed') {
+        // Processed order
         return {
           id: order.id,
           status: order.status,
@@ -120,15 +124,45 @@ router.get('/orders', authenticateToken, async (req, res) => {
               },
             };
           }),
+          statusInfo: 'Your order has been completed.',
         };
       } else {
+
+        let statusInfo;
+        let orderItemsInfo;
+    
+        if (order.status === 'In Process') {
+          statusInfo = 'Your order is currently In Process.';
+          orderItemsInfo = order.OrderItems.map((orderItem) => {
+            return {
+              itemName: orderItem.Item.name,
+              quantity: orderItem.quantity,
+              price: orderItem.Item.price,
+            };
+          });
+        } else if (order.status === 'Cancelled') {
+          statusInfo = 'Your order has been cancelled.';
+          orderItemsInfo = order.OrderItems.map((orderItem) => {
+            return {
+              itemName: orderItem.Item.name,
+              quantity: orderItem.quantity,
+              price: orderItem.Item.price,
+            };
+          });
+        }
+    
         return {
           id: order.id,
           status: order.status,
+          User: {
+            firstName: order.User.firstName,
+            lastName: order.User.lastName,
+          },
+          statusInfo: statusInfo,
+          OrderItemsInfo: orderItemsInfo,
         };
       }
     });
-
     res.json(processedOrders);
   } catch (err) {
     console.log('Error:', err);

@@ -61,7 +61,7 @@ router.post('/', authenticateToken, async (req, res) => {
   router.delete('/:id', authenticateToken, async (req, res) => {
     try {
       if (!req.user) {
-        return res.status(403).json({ message: "Only admin can create a category" });
+        return res.status(403).json({ message: "Only admin can delete a category" });
       }
       const user = req.user;
       if (user.Role.name !== 'Admin') {

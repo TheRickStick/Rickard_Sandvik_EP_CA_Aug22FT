@@ -4,10 +4,6 @@ var bcrypt = require('bcrypt');
 var db = require('../models/db'); 
 var jwt = require('jsonwebtoken');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
 
 // User registration
 router.post('/signup', async (req, res) => {

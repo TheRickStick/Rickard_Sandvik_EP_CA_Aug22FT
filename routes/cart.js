@@ -3,7 +3,7 @@ const router = express.Router();
 const authenticateToken = require('../middleware/authenticateToken'); 
 const db = require('../models/db');
 
-// Retrieve cart for logged-in user
+// GET /cart
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
@@ -28,7 +28,6 @@ router.get('/', authenticateToken, async (req, res) => {
 
     res.json(cart);
   } catch (err) {
-    console.log('Error:', err);
     res.status(500).json({ message: 'An error occurred while retrieving the cart' });
   }
 });
@@ -38,7 +37,6 @@ router.get('/', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
-    console.log('User:', user);
     if (!user) {
       return res.status(401).json({ message: 'You must be logged in to view this' });
     }
@@ -46,7 +44,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     console.log('Cart ID:', id);
 
-    // Check if the cart exists
     const cart = await db.Cart.findOne({
       where: { id, UserId: user.id },
       include: {
@@ -59,8 +56,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-
-    // Delete all cart items associated with the cart ID
     await db.CartItem.destroy({
       where: { CartId: id },
     });

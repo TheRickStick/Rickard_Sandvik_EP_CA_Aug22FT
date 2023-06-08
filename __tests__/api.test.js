@@ -2,6 +2,15 @@ const request = require('supertest');
 const app = require('../app');
 const db = require('../models/db');
 
+beforeAll(async () => {
+  await db.sequelize.sync();
+});
+
+
+afterAll(async () => {
+  await db.sequelize.close();
+});
+
 
 describe('POST /setup', () => {
   beforeEach(async () => {

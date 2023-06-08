@@ -6,7 +6,6 @@ async function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (token == null) {
-    // Guest user
     req.user = null;
     return next();
   }

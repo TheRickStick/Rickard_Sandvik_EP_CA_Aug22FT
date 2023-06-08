@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 const authenticateToken = require('../middleware/authenticateToken');
+const isAdmin = require('../middleware/isAdmin');
 
 // POST /cartItem
 router.post('/', authenticateToken, async (req, res) => {
@@ -84,44 +85,33 @@ router.post('/', authenticateToken, async (req, res) => {
 
 
 // PUT /cartItem/:id
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-    const user = req.user;
   
-
     const { id } = req.params;
-
     const { itemId, quantity } = req.body;
-
+  
     const cartItem = await db.CartItem.findOne({
       where: { ItemId: itemId },
     });
-
+  
     if (!cartItem) {
       return res.status(404).json({ message: 'Cart item not found' });
     }
-
-    const cart = await db.Cart.findOne({
-      where: { UserId: user.id, id: cartItem.CartId },
-    });
-
-    if (!cart) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
+  
     const item = await db.Item.findByPk(itemId);
-
+  
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-
+  
     cartItem.ItemId = itemId;
     cartItem.quantity = quantity;
     await cartItem.save();
-
+  
     res.json(cartItem);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -130,40 +120,35 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
 
 // DELETE /cart_item/:id
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-    const user = req.user;
-   
-
+  
     const { id } = req.params;
-
+  
     const cartItem = await db.CartItem.findOne({
       where: { ItemId: id },
-      include: {
-        model: db.Cart,
-        where: { UserId: user.id },
-      },
     });
-
+  
     if (!cartItem) {
       return res.status(404).json({ message: 'Cart item not found' });
     }
-
+  
     const item = await db.Item.findByPk(cartItem.ItemId);
-
+  
     item.stock += cartItem.quantity;
     await item.save();
-
+  
     await cartItem.destroy();
-
+  
     res.json({ message: 'Cart item deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 module.exports = router;

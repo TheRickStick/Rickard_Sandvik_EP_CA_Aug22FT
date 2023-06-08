@@ -5,12 +5,11 @@ const db = require('../models/db');
 const jwt = require('jsonwebtoken');
 
 
-// User registration
+// POSST Signup
 router.post('/signup', async (req, res) => {
   const { username, password, email, firstName, lastName } = req.body;
   const missingFields = [];
 
-  // Check if each required field is provided
   if (!username) {
     missingFields.push('username');
   }
@@ -27,42 +26,79 @@ router.post('/signup', async (req, res) => {
     missingFields.push('lastName');
   }
 
-  // If any field is missing, return an error with the list of missing fields
   if (missingFields.length > 0) {
     return res.status(400).json({ message: "Missing required fields", missingFields });
   }
 
-  // Check if username is unique
   const user = await db.User.findOne({ where: { username } });
   if (user) {
     return res.status(400).json({ message: "Username already exists" });
   }
 
-  // Check email format
   if (!isValidEmail(email)) {
     return res.status(400).json({ message: "Invalid email format" });
   }
 
-  // Hash password
+  
+  /* This could be added for strong password validation 
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.isValid) {
+    return res.status(400).json({ message: "Invalid password", errors: passwordValidation.errors });
+  }
+*/
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create new user
- // Find the "User" role
- const userRole = await db.Role.findOne({ where: { name: "User" } });
- console.log('UserRole:', userRole);
+  const userRole = await db.Role.findOne({ where: { name: "User" } });
+  console.log('UserRole:', userRole);
 
- // Create new user with the "User" role
- const newUser = await db.User.create({ username, password: hashedPassword, email, firstName, lastName, RoleId: userRole.id });
-
-  return res.status(201).json({ message: "User successfully registered", userId: newUser.id });
+  try {
+    const newUser = await db.User.create({ username, password: hashedPassword, email, firstName, lastName, RoleId: userRole.id });
+    return res.status(201).json({ message: "User successfully registered", userId: newUser.id });
+  } catch (error) {
+    console.error("Error creating new user:", error);
+    return res.status(500).json({ message: "An error occurred while registering the user" });
+  }
 });
 
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
   return emailRegex.test(email);
 }
 
+
+/* This could be added for strong password validation
+function validatePassword(password) {
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push("Password must be at least 8 characters long");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push("Password must contain at least one lowercase letter");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+
+  if (!/\d/.test(password)) {
+    errors.push("Password must contain at least one digit");
+  }
+
+  if (!/[!@#$%^&*()\-_=+{};:,<.>]/.test(password)) {
+    errors.push("Password must contain at least one special character");
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}*/
+
+
+//POST login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 

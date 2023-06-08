@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
 const authenticateToken = require('../middleware/authenticateToken');
+const isAdmin = require('../middleware/isAdmin');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -9,19 +10,12 @@ router.get('/', function(req, res, next) {
 });
 
 // GET /allcarts
-router.get('/allcarts', authenticateToken, async (req, res) => {
+router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
   try {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-    const user = req.user;
     
-
-    // Only allow Admin user to access this endpoint
-    if (user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
     // Retrieve all carts with user and item information
     const carts = await db.Cart.findAll({
       include: [{ model: db.User, attributes: ['firstName', 'lastName'] }, { model: db.Item }],
@@ -145,14 +139,11 @@ router.get('/orders', authenticateToken, async (req, res) => {
 
 
 // GET all orders
-router.get('/allorders', authenticateToken, async (req, res) => {
+router.get('/allorders', authenticateToken, isAdmin, async (req, res) => {
+  if (req.authError) {
+    return res.status(401).json({ message: req.authError });
+  }
   try {
-    const user = req.user;
-
-    if (user.Role.name !== 'Admin') {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-
     const orders = await db.sequelize.query(
       `SELECT Orders.id, Orders.status, Orders.createdAt, Users.firstName, Users.lastName, Items.name AS itemName
        FROM Orders

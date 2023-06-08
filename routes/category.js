@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../models/db');
-var authenticateToken = require('../middleware/authenticateToken'); 
-var isAdmin = require('../middleware/isAdmin');
+const express = require('express');
+const router = express.Router();
+const db = require('../models/db');
+const authenticateToken = require('../middleware/authenticateToken'); 
+const isAdmin = require('../middleware/isAdmin');
 
 //POST /category
 router.post('/', authenticateToken, isAdmin, async (req, res) => {

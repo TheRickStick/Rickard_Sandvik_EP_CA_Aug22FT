@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../models/db');
-var { Op } = require('sequelize');
-var authenticateToken = require('../middleware/authenticateToken'); 
+const express = require('express');
+const router = express.Router();
+const db = require('../models/db');
+const { Op } = require('sequelize');
+const authenticateToken = require('../middleware/authenticateToken'); 
 
 // POST /search
 router.post('/', async (req, res) => {

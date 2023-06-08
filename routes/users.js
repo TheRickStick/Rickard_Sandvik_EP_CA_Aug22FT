@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var bcrypt = require('bcrypt');
-var db = require('../models/db'); 
-var jwt = require('jsonwebtoken');
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const db = require('../models/db'); 
+const jwt = require('jsonwebtoken');
 
 
 // User registration

@@ -7,26 +7,32 @@ async function authenticateToken(req, res, next) {
 
   if (token == null) {
     req.user = null;
+    req.isAdmin = false;
     return next();
   }
-  console.log('Auth Header:', authHeader);
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
-    console.log('Decoded Token:', decodedToken);
-    if (err) return res.sendStatus(403);
+    if (err) {
+      req.user = null;
+      req.isAdmin = false;
+      return next();
+    }
 
     try {
       const user = await db.User.findByPk(decodedToken.id, { include: [db.Cart, db.Role] });
-      if (!user || !user.Role) return res.sendStatus(403);
+      
+      if (!user || !user.Role) {
+        req.user = null;
+        req.isAdmin = false;
+        return next();
+      }
 
       req.user = user;
-      if (user.Role.name === 'Admin') {
-        req.isAdmin = true;
-      }
+      req.isAdmin = (user.Role.name === 'Admin');
 
       next(); 
     } catch (err) {
-      console.log('Error:', err);
+      console.error(err);
       res.status(500).json({ message: err.message });
     }
   });

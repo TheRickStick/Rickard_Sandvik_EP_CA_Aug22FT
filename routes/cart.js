@@ -5,13 +5,12 @@ const db = require('../models/db');
 
 // GET /cart
 router.get('/', authenticateToken, async (req, res) => {
+  if (req.authError) {
+    return res.status(401).json({ message: req.authError });
+  }
+
   try {
     const user = req.user;
-    
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
-    }
-
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
       include: [
@@ -35,14 +34,13 @@ router.get('/', authenticateToken, async (req, res) => {
 
 // DELETE /cart/:id
 router.delete('/:id', authenticateToken, async (req, res) => {
+  if (req.authError) {
+    return res.status(401).json({ message: req.authError });
+  }
+
   try {
     const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
-    }
-
     const { id } = req.params;
-    console.log('Cart ID:', id);
 
     const cart = await db.Cart.findOne({
       where: { id, UserId: user.id },

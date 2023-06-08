@@ -11,10 +11,11 @@ router.get('/', function(req, res, next) {
 // GET /allcarts
 router.get('/allcarts', authenticateToken, async (req, res) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
+    const user = req.user;
+    
 
     // Only allow Admin user to access this endpoint
     if (user.Role.name !== 'Admin') {

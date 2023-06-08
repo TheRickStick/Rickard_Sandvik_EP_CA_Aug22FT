@@ -5,11 +5,11 @@ const authenticateToken = require('../middleware/authenticateToken');
 
 // POST /cartItem
 router.post('/', authenticateToken, async (req, res) => {
+  if (req.authError) {
+    return res.status(401).json({ message: req.authError });
+  }
   try {
     const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
-    }
 
     const { itemId, purchasePrice } = req.body;
 
@@ -86,10 +86,11 @@ router.post('/', authenticateToken, async (req, res) => {
 // PUT /cartItem/:id
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
+    const user = req.user;
+  
 
     const { id } = req.params;
 
@@ -131,10 +132,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // DELETE /cart_item/:id
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ message: 'You must be logged in to view this' });
+    if (req.authError) {
+      return res.status(401).json({ message: req.authError });
     }
+    const user = req.user;
+   
 
     const { id } = req.params;
 

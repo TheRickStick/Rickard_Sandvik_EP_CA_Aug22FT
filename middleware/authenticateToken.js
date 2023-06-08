@@ -8,6 +8,7 @@ async function authenticateToken(req, res, next) {
   if (token == null) {
     req.user = null;
     req.isAdmin = false;
+    req.authError = 'You must be logged in to view this';
     return next();
   }
 
@@ -15,6 +16,7 @@ async function authenticateToken(req, res, next) {
     if (err) {
       req.user = null;
       req.isAdmin = false;
+      req.authError = 'Invalid token';
       return next();
     }
 
@@ -24,6 +26,7 @@ async function authenticateToken(req, res, next) {
       if (!user || !user.Role) {
         req.user = null;
         req.isAdmin = false;
+        req.authError = 'Invalid user or role';
         return next();
       }
 

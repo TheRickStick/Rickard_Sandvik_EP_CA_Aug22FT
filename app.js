@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+var getRouter = require('./routes/get');
 var usersRouter = require('./routes/users');
 var setupRouter = require('./routes/setup');
 var categoryRouter = require('./routes/category');
@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 db.sequelize.sync()
 
-app.use('/', indexRouter);
+app.use('/', getRouter);
 app.use('/', usersRouter);
 app.use('/setup', setupRouter);
 app.use('/category', categoryRouter);

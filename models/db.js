@@ -65,8 +65,12 @@ const Order = sequelize.define('Order', {
 });
 
 const OrderItem = sequelize.define('OrderItem', {
-  quantity: Sequelize.INTEGER
+  quantity: Sequelize.INTEGER,
+  purchasePrice: Sequelize.DECIMAL,
+  totalPrice: Sequelize.DECIMAL,
+  moneySaved: Sequelize.DECIMAL
 });
+
 
 // Define relationships
 User.belongsTo(Role);

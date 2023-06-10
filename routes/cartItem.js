@@ -11,10 +11,9 @@ router.post('/', authenticateToken, async (req, res) => {
   }
   try {
     const user = req.user;
-
     const { itemId } = req.body;
-
     const item = await db.Item.findByPk(itemId);
+
     if (!item) {
       return res.status(404).json({ message: `The requested item with ID ${itemId} was not found` });
     }
@@ -33,14 +32,14 @@ router.post('/', authenticateToken, async (req, res) => {
       let discount = 0;
 
       if (usersWithSameEmail === 2) {
-        discount = 0.1; 
+        discount = 0.1;
       } else if (usersWithSameEmail === 3) {
-        discount = 0.3; 
+        discount = 0.3;
       } else if (usersWithSameEmail >= 4) {
-        discount = 0.4; 
+        discount = 0.4;
       }
 
-      const quantity = req.body.quantity || 1; 
+      const quantity = req.body.quantity || 1;
       const originalPrice = item.price;
       const purchasePrice = originalPrice * (1 - discount);
       const totalPrice = purchasePrice * quantity;
@@ -68,51 +67,45 @@ router.post('/', authenticateToken, async (req, res) => {
         .status(400)
         .json({ message: 'Not enough stock available', availableStock: item.stock });
     }
+
     const existingCartItem = await db.CartItem.findOne({
       where: {
         CartId: cart.id,
         ItemId: item.id,
       },
     });
-    
+
     if (existingCartItem) {
       const newQuantity = existingCartItem.quantity + (req.body.quantity || 1);
-    
+
       if (newQuantity > item.stock) {
         return res
           .status(400)
           .json({ message: 'Not enough stock available', availableStock: item.stock });
       }
-    
+
       existingCartItem.quantity = newQuantity;
-      existingCartItem.totalPrice = existingCartItem.purchasePrice * newQuantity; 
-    
-  
-      const originalPrice = existingCartItem.originalPrice * existingCartItem.quantity;
-      const purchasePrice = existingCartItem.purchasePrice * existingCartItem.quantity;
-      const moneySaved = originalPrice - purchasePrice;
-      existingCartItem.moneySaved = moneySaved; 
-    
+      existingCartItem.totalPrice = existingCartItem.purchasePrice * newQuantity;
+      existingCartItem.moneySaved = existingCartItem.originalPrice - existingCartItem.totalPrice;
+
       await existingCartItem.save();
-    
+
       return res.status(200).json(existingCartItem);
     }
-    
-    
 
     const email = user.email;
     const usersWithSameEmail = await db.User.count({ where: { email } });
     let discount = 0;
 
     if (usersWithSameEmail === 2) {
-      discount = 0.1; 
+      discount = 0.1;
     } else if (usersWithSameEmail === 3) {
-      discount = 0.3; 
+      discount = 0.3;
     } else if (usersWithSameEmail >= 4) {
-      discount = 0.4; 
+      discount = 0.4;
     }
 
-    const quantity = req.body.quantity || 1; 
+    const quantity = req.body.quantity || 1;
     const originalPrice = item.price;
     const purchasePrice = originalPrice * (1 - discount);
     const totalPrice = purchasePrice * quantity;
@@ -134,7 +127,7 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-
+//PUT /cart_item/:id
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     if (req.authError) {

@@ -90,7 +90,7 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
 
     const validStatuses = ['In Process', 'Completed', 'Cancelled'];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status, Please Use In Process, Complete or Cancelled' });
+      return res.status(400).json({ message: 'Invalid status. Please use In Process, Complete, or Cancelled' });
     }
 
     const order = await db.Order.findByPk(orderId);
@@ -99,19 +99,23 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    order.status = status;
-    await order.save();
-
- 
     if (status === 'Cancelled') {
+      if (order.status === 'Cancelled') {
+        return res.status(400).json({ message: 'Order has already been cancelled' });
+      }
+
+      order.status = status;
+      await order.save();
+
       const orderItems = await db.OrderItem.findAll({ where: { OrderId: orderId } });
 
-   
       for (const orderItem of orderItems) {
         const item = await db.Item.findByPk(orderItem.ItemId);
         item.stock += orderItem.quantity;
         await item.save();
       }
+
+      return res.status(200).json({ message: 'Order cancelled successfully. Items returned to stock.', order });
     }
 
     res.json(order);
@@ -120,6 +124,8 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
 
 
 module.exports = router;

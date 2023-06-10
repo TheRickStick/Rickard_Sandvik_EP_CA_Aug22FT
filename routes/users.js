@@ -41,12 +41,6 @@ router.post('/signup', async (req, res) => {
   }
 
   
-  /* This could be added for strong password validation 
-  const passwordValidation = validatePassword(password);
-  if (!passwordValidation.isValid) {
-    return res.status(400).json({ message: "Invalid password", errors: passwordValidation.errors });
-  }
-*/
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -68,35 +62,6 @@ function isValidEmail(email) {
 }
 
 
-/* This could be added for strong password validation
-function validatePassword(password) {
-  const errors = [];
-
-  if (password.length < 8) {
-    errors.push("Password must be at least 8 characters long");
-  }
-
-  if (!/[a-z]/.test(password)) {
-    errors.push("Password must contain at least one lowercase letter");
-  }
-
-  if (!/[A-Z]/.test(password)) {
-    errors.push("Password must contain at least one uppercase letter");
-  }
-
-  if (!/\d/.test(password)) {
-    errors.push("Password must contain at least one digit");
-  }
-
-  if (!/[!@#$%^&*()\-_=+{};:,<.>]/.test(password)) {
-    errors.push("Password must contain at least one special character");
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}*/
 
 
 //POST login

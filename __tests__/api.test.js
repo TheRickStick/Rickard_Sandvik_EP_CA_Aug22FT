@@ -47,7 +47,7 @@ describe('User Registration and Login', () => {
 
   test('POST /signup - success', async () => {
     const user = {
-      username: 'john_doe',
+      username: 'MistenkeligRepeterendeHippi',
       password: 'P@ssword123',
       email: 'john.doe@example.com',
       firstName: 'John',
@@ -68,7 +68,7 @@ describe('User Registration and Login', () => {
   
   test('POST /login - success (User)', async () => {
     const credentials = {
-      username: 'john_doe',
+      username: 'MistenkeligRepeterendeHippi',
       password: 'P@ssword123',
     };
 
@@ -185,7 +185,7 @@ describe('Using User on Admin Endpoints', () => {
 
   beforeAll(async () => {
     const credentials = {
-      username: 'john_doe',
+      username: 'MistenkeligRepeterendeHippi',
       password: 'P@ssword123',
     };
 

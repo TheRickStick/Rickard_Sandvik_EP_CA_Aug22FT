@@ -1,3 +1,104 @@
-Before running test please run "npm start" first. 
-This is to ensure all the tables have been created. 
-After this has been done you can run the tests with the "npm test" command. 
+# This is a StockSalesDB project devolped as an exam. 
+# It is the backend part of a site that could be used for handling auth and e-commerce.
+
+# Getting started: 
+What do you need?
+You will need Node.JS installed on you IDE, and MySQL for the database.
+
+# Installing: 
+First you will need to clone the repo:
+# Clone the repository
+git clone https://github.com/TheRickStick/Rickard_Sandvik_EP_CA_Aug22FT
+
+# Install dependencies
+npm install
+
+# Start the server
+npm run start
+Now, you should navigate to http://localhost:3000 .
+
+# Running the tests
+This project uses Jest for testing. 
+To run it type: npm run test
+The username for test is MistenkeligRepeterendeHippi, please do not use that when creating users if you were to run the test after adding users. 
+
+# API Endpoints: 
+
+# Authentication: 
+ POST /login
+ POST /signup
+ DEL /user:id
+
+ # Item endpoints:
+ GET /items
+ POST /item
+ PUT /item/:id
+ DELETE /item/:id
+
+ # Category endpoints: 
+ GET /categories
+ POST /category
+ PUT /category/:id
+ DELETE /category/:id
+
+ # Cart endpoints: 
+ GET /cart
+ GET /allcarts
+ POST /cart_item
+ PUT /cart_item/:id
+ DELETE /cart_item/:id
+ DELETE /cart/:id
+
+ # Order endpoints: 
+ GET /orders
+ GET /allorders
+ POST /order/:id
+ PUT /order/:id
+
+ # Utility endpoints: 
+ POST /setup
+ POST /search
+
+ For detailed information about these endpoints (including parameters, request body structure, and responses), please refer to our API Documentation.
+ # Postman url: https://documenter.getpostman.com/view/25739749/2s93sZ6u76
+
+ # .env details
+ DB_USERNAME = "admin"
+ DB_PASSWORD = "P4ssword"
+ DATABASE_NAME = "stocksalesdb"
+ DIALECT = "mysql"
+ DIALECTMODEL = "mysql2"
+ PORT = "3000"
+ HOST = "localhost"
+ JWT_SECRET="MySecretPony"
+
+ # Dependencies
+ The depedencies are as follows:
+ "dependencies": {
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "~1.9.1",
+    "mysql2": "^3.3.1",
+    "sequelize": "^6.31.1"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  }
+
+  # Version: 
+  This project was developed using node v16.17.0.
+
+  # Version Control: 
+  This project was developed using GitHub as version control.
+
+  # Project Managment: 
+  This project was developed using Jira as the managment software of choice.
+  

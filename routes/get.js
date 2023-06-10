@@ -107,7 +107,8 @@ router.get('/items', authenticateToken, async (req, res) => {
   }
 });
 
-router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
+
+router.get('/orders', authenticateToken, async (req, res) => {
   if (req.authError) {
     return res.status(401).json({ message: req.authError });
   }
@@ -124,7 +125,7 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
           },
           {
             model: db.OrderItem,
-            attributes: ['id', 'quantity'],
+            attributes: ['id', 'quantity', 'totalPrice'], 
             include: {
               model: db.Item,
               attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
@@ -138,7 +139,6 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
         attributes: { exclude: ['createdAt', 'updatedAt'] },
       });
     } else {
-      // Regular user, fetch orders for the logged-in user
       orders = await db.Order.findAll({
         where: { UserId: user.id },
         include: [
@@ -148,7 +148,7 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
           },
           {
             model: db.OrderItem,
-            attributes: ['id', 'quantity'],
+            attributes: ['id', 'quantity', 'totalPrice'],
             include: {
               model: db.Item,
               attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
@@ -172,22 +172,17 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
             firstName: order.User.firstName,
             lastName: order.User.lastName,
           },
-          OrderItems: order.OrderItems.map((orderItem) => {
+          OrderItemsInfo: order.OrderItems.map((orderItem) => {
             return {
               id: orderItem.id,
               quantity: orderItem.quantity,
               Item: {
                 id: orderItem.Item.id,
-                sku: orderItem.Item.sku,
                 name: orderItem.Item.name,
                 price: orderItem.Item.price,
-                stock: orderItem.Item.stock,
-                img_url: orderItem.Item.img_url,
-                Category: {
-                  id: orderItem.Item.Category.id,
-                  name: orderItem.Item.Category.name,
-                },
               },
+              totalPrice: orderItem.totalPrice,
+              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity), 
             };
           }),
           statusInfo: 'Your order has been completed.',
@@ -200,18 +195,32 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
           statusInfo = 'Your order is currently In Process.';
           orderItemsInfo = order.OrderItems.map((orderItem) => {
             return {
-              itemName: orderItem.Item.name,
+              id: orderItem.id,
               quantity: orderItem.quantity,
-              price: orderItem.Item.price,
+              Item: {
+                id: orderItem.Item.id,
+                sku: orderItem.Item.sku,
+                name: orderItem.Item.name,
+                price: orderItem.Item.price,
+                stock: orderItem.Item.stock,
+                img_url: orderItem.Item.img_url,
+              },
+              totalPrice: orderItem.totalPrice,
+              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity), 
             };
           });
         } else if (order.status === 'Cancelled') {
           statusInfo = 'Your order has been cancelled.';
           orderItemsInfo = order.OrderItems.map((orderItem) => {
             return {
-              itemName: orderItem.Item.name,
+              id: orderItem.id,
               quantity: orderItem.quantity,
-              price: orderItem.Item.price,
+              Item: {
+                id: orderItem.Item.id,
+                name: orderItem.Item.name,
+                price: orderItem.Item.price,
+                stock: orderItem.Item.stock,
+              },
             };
           });
         }
@@ -234,6 +243,9 @@ router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+
 
 
 

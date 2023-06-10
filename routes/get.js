@@ -107,7 +107,7 @@ router.get('/items', authenticateToken, async (req, res) => {
   }
 });
 
-
+//GET orders  
 router.get('/orders', authenticateToken, async (req, res) => {
   if (req.authError) {
     return res.status(401).json({ message: req.authError });
@@ -243,11 +243,6 @@ router.get('/orders', authenticateToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-
-
-
-
 
 
 // GET all orders

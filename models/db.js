@@ -72,7 +72,6 @@ const OrderItem = sequelize.define('OrderItem', {
 });
 
 
-// Define relationships
 User.belongsTo(Role);
 Role.hasMany(User);
 
@@ -82,7 +81,6 @@ Cart.belongsTo(User);
 Category.hasMany(Item);
 Item.belongsTo(Category);
 
-// Cart and CartItem
 Cart.belongsToMany(Item, { through: CartItem });
 Item.belongsToMany(Cart, { through: CartItem });
 
@@ -93,11 +91,11 @@ OrderItem.belongsTo(Order);
 OrderItem.belongsTo(Item);
 Order.hasMany(OrderItem);
 
-// Cart and CartItem
+
 Cart.hasMany(CartItem);
 CartItem.belongsTo(Cart);
 
-//  Item and CartItem
+
 Item.hasMany(CartItem); 
 CartItem.belongsTo(Item);
 

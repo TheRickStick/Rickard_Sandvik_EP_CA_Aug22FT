@@ -35,13 +35,11 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Populate roles
     const roles = ["Admin", "User"];
     for (const role of roles) {
       await db.Role.findOrCreate({ where: { name: role } });
     }
 
-    // Create Admin if not exist
     const hashedPassword = await bcrypt.hash('P@ssword2023', 10);
     const [adminRole] = await db.Role.findOrCreate({ where: { name: 'Admin' } });
 

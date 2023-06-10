@@ -10,6 +10,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+
+//GET allcarts
 router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
   try {
     if (req.authError) {
@@ -86,20 +88,16 @@ router.get('/items', authenticateToken, async (req, res) => {
   try {
     const { user } = req; 
 
-    // Retrieve items with their categories
     const items = await db.Item.findAll({
       attributes: ['name', 'price', 'stock'], 
       include: db.Category 
     });
 
-    // Filter items 
     const filteredItems = items.filter(item => {
       if (!user) {
-        // Guest user
         return item.stock > 0;
       }
 
-      // Logged-in user
       return true;
     });
 
@@ -142,7 +140,6 @@ router.get('/orders', authenticateToken, async (req, res) => {
 
     const processedOrders = orders.map((order) => {
       if (order.status === 'Completed') {
-        // Processed order
         return {
           id: order.id,
           status: order.status,

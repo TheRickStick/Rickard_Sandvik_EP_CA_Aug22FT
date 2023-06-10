@@ -16,7 +16,9 @@ router.get('/', authenticateToken, async (req, res) => {
       include: [
         {
           model: db.Item,
-          through: { attributes: ['quantity'] },
+          through: {
+            attributes: ['quantity', 'originalPrice', 'purchasePrice', 'totalPrice', 'moneySaved'],
+          },
         },
       ],
     });
@@ -30,7 +32,8 @@ router.get('/', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'An error occurred while retrieving the cart' });
   }
 });
-    
+
+
 
 // DELETE /cart/:id
 router.delete('/:id', authenticateToken, async (req, res) => {

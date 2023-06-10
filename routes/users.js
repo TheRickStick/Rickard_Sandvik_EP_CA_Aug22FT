@@ -3,7 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const db = require('../models/db'); 
 const jwt = require('jsonwebtoken');
-
+const authenticateToken = require('../middleware/authenticateToken'); 
+const isAdmin = require('../middleware/isAdmin');
 
 // POSST Signup
 router.post('/signup', async (req, res) => {
@@ -120,7 +121,7 @@ return res.status(200).json({ message: "User successfully logged in", data: { to
 });
 
 // DELETE /user/:id - delete a user
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', authenticateToken, isAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -132,7 +133,7 @@ router.delete('/user/:id', async (req, res) => {
 
     await user.destroy();
 
-    return res.status(200).json(); 
+    return res.status(200).json({ message: `User with ID ${id} has been successfully deleted` });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'An error occurred while deleting the user' });

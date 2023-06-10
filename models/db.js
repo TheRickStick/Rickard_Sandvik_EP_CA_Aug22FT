@@ -34,13 +34,30 @@ const Item = sequelize.define('Item', {
 });
 
 const Cart = sequelize.define('Cart', {
-  // ...
+ 
 });
 
 const CartItem = sequelize.define('CartItem', {
-  quantity: Sequelize.INTEGER,
-  purchasePrice: Sequelize.DECIMAL
-  // ...
+  quantity: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  originalPrice: {
+    type: Sequelize.DECIMAL,
+    allowNull: false,
+  },
+  purchasePrice: {
+    type: Sequelize.DECIMAL,
+    allowNull: false,
+  },
+  totalPrice: {
+    type: Sequelize.DECIMAL,
+    allowNull: false,
+  },
+  moneySaved: {
+    type: Sequelize.DECIMAL,
+    allowNull: false,
+  },
 });
 
 const Order = sequelize.define('Order', {

@@ -3,29 +3,73 @@ const router = express.Router();
 const db = require('../models/db');
 const authenticateToken = require('../middleware/authenticateToken');
 const isAdmin = require('../middleware/isAdmin');
+const { sequelize } = require('../models/db');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-// GET /allcarts
 router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
   try {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-    
-    // Retrieve all carts with user and item information
-    const carts = await db.Cart.findAll({
-      include: [{ model: db.User, attributes: ['firstName', 'lastName'] }, { model: db.Item }],
+
+    const query = `
+      SELECT
+        carts.id AS cartId,
+        users.firstName,
+        users.lastName,
+        items.id AS itemId,
+        items.sku,
+        items.name,
+        items.price,
+        items.stock,
+        items.img_url,
+        cartItems.quantity
+      FROM
+        carts
+        JOIN users ON carts.UserId = users.id
+        JOIN cartItems ON carts.id = cartItems.CartId
+        JOIN items ON cartItems.ItemId = items.id
+    `;
+
+    const result = await sequelize.query(query, { type: sequelize.QueryTypes.SELECT });
+
+    const carts = {};
+
+    result.forEach((row) => {
+      const { cartId, firstName, lastName, itemId, sku, name, price, stock, img_url, quantity } = row;
+
+      if (!carts[cartId]) {
+        carts[cartId] = {
+          id: cartId,
+          user: {
+            firstName,
+            lastName,
+          },
+          items: [],
+        };
+      }
+
+      carts[cartId].items.push({
+        id: itemId,
+        sku,
+        name,
+        price,
+        stock,
+        img_url,
+        quantity,
+      });
     });
 
-    res.json(carts);
+    res.json(Object.values(carts));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 //Get /categories
 router.get('/categories', async (req, res) => {

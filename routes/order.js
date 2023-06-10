@@ -12,10 +12,9 @@ router.post('/:id', authenticateToken, async (req, res) => {
     const user = req.user;
     const itemId = req.params.id;
 
-   
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
-      include: [db.User], 
+      include: [db.User],
     });
 
     if (!cart) {
@@ -30,7 +29,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Item not found in cart' });
     }
 
-    const quantity = cartItem.quantity; 
+    const quantity = cartItem.quantity;
 
     const item = await db.Item.findByPk(itemId);
 
@@ -48,19 +47,7 @@ router.post('/:id', authenticateToken, async (req, res) => {
         .json({ message: 'Not enough stock available', availableStock: item.stock });
     }
 
-    const email = cart.User.email;
-    const usersWithSameEmail = await db.User.count({ where: { email } });
-    let discount = 0;
-
-    if (usersWithSameEmail === 2) {
-      discount = 0.1; 
-    } else if (usersWithSameEmail === 3) {
-      discount = 0.3; 
-    } else if (usersWithSameEmail >= 4) {
-      discount = 0.4; 
-    }
-
-    const purchasePrice = item.price * (1 - discount);
+    const purchasePrice = cartItem.purchasePrice;
 
     const totalPrice = purchasePrice * quantity;
 
@@ -74,21 +61,22 @@ router.post('/:id', authenticateToken, async (req, res) => {
       ItemId: item.id,
       purchasePrice: purchasePrice,
       quantity: quantity,
-      discount: discount,
       totalPrice: totalPrice,
     });
 
-     await cartItem.destroy();
+    await cartItem.destroy();
 
-    item.stock -= quantity; 
+    item.stock -= quantity;
     await item.save();
 
-    res.status(201).json({ orderItem, price: totalPrice, discount: discount });
+    res.status(201).json({ orderItem, price: totalPrice });
   } catch (err) {
     console.log('Error:', err);
     res.status(500).json({ message: 'An error occurred while processing the order' });
   }
 });
+
+
 
 // PUT /order/:id 
 router.put('/:id', authenticateToken, isAdmin, async (req, res) => {

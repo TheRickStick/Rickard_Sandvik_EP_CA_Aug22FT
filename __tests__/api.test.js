@@ -262,8 +262,12 @@ describe('Deletion', () => {
     await request(app)
       .delete(`/user/${userId}`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .expect(200);
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.message).toBe(`User with ID ${userId} has been successfully deleted`);
+      });
   });
+  
   
   test('DELETE /item/:id - delete the item', async () => {
     await request(app)

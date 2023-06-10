@@ -140,7 +140,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-    
+
     const { itemId, quantity } = req.body;
 
     const cartItem = await db.CartItem.findOne({
@@ -175,7 +175,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 
 // DELETE /cart_item/:id

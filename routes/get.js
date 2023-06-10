@@ -107,36 +107,61 @@ router.get('/items', authenticateToken, async (req, res) => {
   }
 });
 
-// GET orders 
-router.get('/orders', authenticateToken, async (req, res) => {
+router.get('/orders', authenticateToken, isAdmin, async (req, res) => {
   if (req.authError) {
     return res.status(401).json({ message: req.authError });
   }
   try {
     const user = req.user;
 
-    const orders = await db.Order.findAll({
-      where: { UserId: user.id },
-      include: [
-        {
-          model: db.User,
-          attributes: ['firstName', 'lastName', 'username'],
-        },
-        {
-          model: db.OrderItem,
-          attributes: ['id', 'quantity'],
-          include: {
-            model: db.Item,
-            attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
+    let orders;
+    if (req.isAdmin) {
+      orders = await db.Order.findAll({
+        include: [
+          {
+            model: db.User,
+            attributes: ['firstName', 'lastName', 'username'],
+          },
+          {
+            model: db.OrderItem,
+            attributes: ['id', 'quantity'],
             include: {
-              model: db.Category,
-              attributes: ['id', 'name'],
+              model: db.Item,
+              attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
+              include: {
+                model: db.Category,
+                attributes: ['id', 'name'],
+              },
             },
           },
-        },
-      ],
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
-    });
+        ],
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      });
+    } else {
+      // Regular user, fetch orders for the logged-in user
+      orders = await db.Order.findAll({
+        where: { UserId: user.id },
+        include: [
+          {
+            model: db.User,
+            attributes: ['firstName', 'lastName', 'username'],
+          },
+          {
+            model: db.OrderItem,
+            attributes: ['id', 'quantity'],
+            include: {
+              model: db.Item,
+              attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
+              include: {
+                model: db.Category,
+                attributes: ['id', 'name'],
+              },
+            },
+          },
+        ],
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      });
+    }
 
     const processedOrders = orders.map((order) => {
       if (order.status === 'Completed') {
@@ -168,10 +193,9 @@ router.get('/orders', authenticateToken, async (req, res) => {
           statusInfo: 'Your order has been completed.',
         };
       } else {
-
         let statusInfo;
         let orderItemsInfo;
-    
+
         if (order.status === 'In Process') {
           statusInfo = 'Your order is currently In Process.';
           orderItemsInfo = order.OrderItems.map((orderItem) => {
@@ -191,7 +215,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
             };
           });
         }
-    
+
         return {
           id: order.id,
           status: order.status,
@@ -210,6 +234,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 

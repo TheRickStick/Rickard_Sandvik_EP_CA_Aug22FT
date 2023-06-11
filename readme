@@ -29,6 +29,7 @@ npm install
  JWT_SECRET="MySecretPony"
 
 # Start the server
+# Before you start the server please make sure you have created the database (Instructions further down)
 npm run start
 Now, you should navigate to http://localhost:3000 .
 
@@ -37,6 +38,15 @@ Now, you should navigate to http://localhost:3000 .
  upload them yourself you will need to edit the .gitignore file. It is strongly adviced against it, as 
  node_modules will be installed via npm install and it is bad practice to upload .env info.
  Furthermore, this project is set up with express view --ejs so it is ready for a front-end
+
+# DataBase
+A MySQL Database called “StockSalesDB” is to be created for this web application.
+
+Use the following SQL script to create an “admin” Database User with all database privileges:
+
+CREATE USER 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY 'P@ssw0rd';
+ALTER USER 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY 'P@ssw0rd';
+GRANT ALL PRIVILEGES ON database_name.* TO 'admin'@'localhost';
 
 # Running the tests
 This project uses Jest and supertest for testing. 

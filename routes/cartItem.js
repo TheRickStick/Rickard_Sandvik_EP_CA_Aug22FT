@@ -143,6 +143,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     const { itemId, quantity } = req.body;
 
+    if (!itemId || !quantity  ) {
+      return res.status(400).json({ message: 'itemId and quantity are required.' });
+    }
+
     const cartItem = await db.CartItem.findOne({
       where: { ItemId: itemId },
     });

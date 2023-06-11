@@ -13,6 +13,10 @@ router.post('/', authenticateToken, isAdmin, async (req, res) => {
 
     const { name, sku, price, stock, img_url, categoryId } = req.body;
 
+    if (!name || !sku || price === undefined || stock === undefined || !img_url || !categoryId) {
+      return res.status(400).json({ message: "All fields are required: name, sku, price, stock, img_url, categoryId" });
+    }
+
     const category = await db.Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
@@ -45,6 +49,10 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
 
     const itemId = req.params.id;
     const { name, sku, price, stock, img_url, categoryId } = req.body;
+    
+    if (!name || !sku || price === undefined || stock === undefined || !img_url || !categoryId) {
+      return res.status(400).json({ message: "All fields are required: name, sku, price, stock, img_url, categoryId" });
+    }
 
     const item = await db.Item.findByPk(itemId);
     if (!item) {

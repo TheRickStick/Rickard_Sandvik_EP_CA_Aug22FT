@@ -9,6 +9,13 @@ router.post('/', authenticateToken, async (req, res) => {
   if (req.authError) {
     return res.status(401).json({ message: req.authError });
   }
+
+  const { itemId } = req.body;
+
+  if (!itemId) {
+    return res.status(400).json({ message: 'itemId is a required field.' });
+  }
+
   try {
     const user = req.user;
     const { itemId } = req.body;

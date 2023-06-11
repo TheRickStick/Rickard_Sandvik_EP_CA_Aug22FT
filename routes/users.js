@@ -68,6 +68,10 @@ function isValidEmail(email) {
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required fields.' });
+  }
+
   const user = await db.User.findOne({ where: { username } });
   if (!user) {
     return res.status(400).json({ message: "User not found" });

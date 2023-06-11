@@ -3,22 +3,42 @@
 
 # Getting started: 
 What do you need?
-You will need Node.JS installed on you IDE, and MySQL for the database.
+You will need Node.JS installed on you IDE (for example VSCode), and MySQL for the database.
 
 # Installing: 
-First you will need to clone the repo:
+First you will need to clone the repository:
 # Clone the repository
 git clone https://github.com/TheRickStick/Rickard_Sandvik_EP_CA_Aug22FT
 
+# Navigate to directory
+cd Rickard_Sandvik_EP_CA_Aug22FT
+(This assumes you are in the parent directory. If not you will need to provide the corrrect path)
+
 # Install dependencies
 npm install
+
+# Make a .env file in your root directory
+ # .env details
+ DB_USERNAME = "admin"
+ DB_PASSWORD = "P4ssword"
+ DATABASE_NAME = "stocksalesdb"
+ DIALECT = "mysql"
+ DIALECTMODEL = "mysql2"
+ PORT = "3000"
+ HOST = "localhost"
+ JWT_SECRET="MySecretPony"
 
 # Start the server
 npm run start
 Now, you should navigate to http://localhost:3000 .
 
+# Note
+ This project uses a .gitignore file to prevent .env and node_modules from being uploaded. If you wish to 
+ upload them yourself you will need to edit the .gitignore file. It is strongly adviced against it, as 
+ node_modules will be installed via npm install and it is bad practice to upload .env info.
+
 # Running the tests
-This project uses Jest for testing. 
+This project uses Jest and supertest for testing. 
 To run it type: npm run test
 The username for test is MistenkeligRepeterendeHippi, please do not use that when creating users if you were to run the test after adding users. 
 
@@ -62,15 +82,6 @@ The username for test is MistenkeligRepeterendeHippi, please do not use that whe
  For detailed information about these endpoints (including parameters, request body structure, and responses), please refer to our API Documentation.
  # Postman url: https://documenter.getpostman.com/view/25739749/2s93sZ6u76
 
- # .env details
- DB_USERNAME = "admin"
- DB_PASSWORD = "P4ssword"
- DATABASE_NAME = "stocksalesdb"
- DIALECT = "mysql"
- DIALECTMODEL = "mysql2"
- PORT = "3000"
- HOST = "localhost"
- JWT_SECRET="MySecretPony"
 
  # Dependencies
  The depedencies are as follows:
@@ -101,4 +112,3 @@ The username for test is MistenkeligRepeterendeHippi, please do not use that whe
 
   # Project Managment: 
   This project was developed using Jira as the managment software of choice.
-  

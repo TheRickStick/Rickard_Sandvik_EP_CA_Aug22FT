@@ -7,6 +7,10 @@ const { Op } = require('sequelize');
 router.post('/', async (req, res) => {
   try {
     const { itemName, categoryName, sku } = req.body;
+
+    if (!itemName && !categoryName && !sku) {
+      return res.status(400).json({ message: 'Error: You must provide an item name, category name, or sku.' });
+    }
   
     let searchOptions = {};
   

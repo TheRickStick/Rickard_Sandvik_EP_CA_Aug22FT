@@ -36,6 +36,7 @@ Now, you should navigate to http://localhost:3000 .
  This project uses a .gitignore file to prevent .env and node_modules from being uploaded. If you wish to 
  upload them yourself you will need to edit the .gitignore file. It is strongly adviced against it, as 
  node_modules will be installed via npm install and it is bad practice to upload .env info.
+ Furthermore, this project is set up with express view --ejs so it is ready for a front-end
 
 # Running the tests
 This project uses Jest and supertest for testing. 
@@ -82,6 +83,8 @@ The username for test is MistenkeligRepeterendeHippi, please do not use that whe
  For detailed information about these endpoints (including parameters, request body structure, and responses), please refer to API Documentation.
  # Postman url: https://documenter.getpostman.com/view/25739749/2s93sZ6u76
 
+# Notes endpoint
+Please be aware if an order is set to cancelled it cannot be undone. This should be handled with a confirmation prompt in front-end
 
  # Dependencies
  The depedencies are as follows:

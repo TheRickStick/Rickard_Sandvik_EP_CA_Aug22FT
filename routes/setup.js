@@ -22,7 +22,6 @@ router.post('/', async (req, res) => {
       return res.status(500).json({ message: "Invalid data from API", data: jsonData });
     }
 
-    // Populate items
     for (const item of jsonData.data) {
       const [category] = await db.Category.findOrCreate({ where: { name: item.category } });
       await db.Item.create({

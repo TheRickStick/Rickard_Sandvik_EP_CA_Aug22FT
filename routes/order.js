@@ -4,6 +4,7 @@ const authenticateToken = require('../middleware/authenticateToken');
 const db = require('../models/db');
 const isAdmin = require('../middleware/isAdmin');
 
+//POST order
 router.post('/:id', authenticateToken, async (req, res) => {
   try {
     if (req.authError) {

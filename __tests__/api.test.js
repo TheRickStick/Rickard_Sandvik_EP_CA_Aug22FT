@@ -129,6 +129,7 @@ describe('User Registration and Login', () => {
       price: 999,
       stock: 100,
       sku: 'SKU_TEST', 
+      img_url: 'https://example.com/item.png',
     };
   
     const response = await request(app)

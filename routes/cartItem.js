@@ -143,7 +143,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     const { itemId, quantity } = req.body;
 
-    if (!itemId || !quantity  ) {
+    if (!itemId || !quantity) {
       return res.status(400).json({ message: 'itemId and quantity are required.' });
     }
 
@@ -163,7 +163,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     const availableStock = item.stock;
 
-   
+
     if (quantity > availableStock) {
       return res
         .status(400)
@@ -187,33 +187,33 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     if (req.authError) {
       return res.status(401).json({ message: req.authError });
     }
-  
+
     const { id } = req.params;
     const user = req.user;
-  
+
     const cart = await db.Cart.findOne({
       where: { UserId: user.id },
     });
-  
+
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
-  
+
     const cartItem = await db.CartItem.findOne({
       where: { ItemId: id, CartId: cart.id },
     });
-  
+
     if (!cartItem) {
       return res.status(404).json({ message: 'Cart item not found' });
     }
-  
+
     const item = await db.Item.findByPk(cartItem.ItemId);
-  
+
     item.stock += cartItem.quantity;
     await item.save();
-  
+
     await cartItem.destroy();
-  
+
     res.json({ message: 'Cart item deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });

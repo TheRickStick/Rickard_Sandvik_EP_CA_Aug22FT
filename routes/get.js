@@ -6,7 +6,7 @@ const isAdmin = require('../middleware/isAdmin');
 const { sequelize } = require('../models/db');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
@@ -26,10 +26,13 @@ router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
         items.id AS itemId,
         items.sku,
         items.name,
-        items.price,
+        cartItems.originalPrice,
         items.stock,
         items.img_url,
-        cartItems.quantity
+        cartItems.quantity,
+        cartItems.purchasePrice,
+        cartItems.totalPrice,
+        cartItems.moneySaved
       FROM
         carts
         JOIN users ON carts.UserId = users.id
@@ -42,7 +45,7 @@ router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
     const carts = {};
 
     result.forEach((row) => {
-      const { cartId, firstName, lastName, itemId, sku, name, price, stock, img_url, quantity } = row;
+      const { cartId, firstName, lastName, itemId, sku, name, originalPrice, stock, img_url, quantity, purchasePrice, totalPrice, moneySaved } = row;
 
       if (!carts[cartId]) {
         carts[cartId] = {
@@ -59,10 +62,13 @@ router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
         id: itemId,
         sku,
         name,
-        price,
+        originalPrice,
         stock,
         img_url,
         quantity,
+        purchasePrice,
+        totalPrice,
+        moneySaved,
       });
     });
 
@@ -71,6 +77,7 @@ router.get('/allcarts', authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 //Get /categories
@@ -86,11 +93,11 @@ router.get('/categories', async (req, res) => {
 // GET /items
 router.get('/items', authenticateToken, async (req, res) => {
   try {
-    const { user } = req; 
+    const { user } = req;
 
     const items = await db.Item.findAll({
-      attributes: ['name', 'price', 'stock'], 
-      include: db.Category 
+      attributes: ['name', 'price', 'stock'],
+      include: db.Category
     });
 
     const filteredItems = items.filter(item => {
@@ -125,7 +132,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
           },
           {
             model: db.OrderItem,
-            attributes: ['id', 'quantity', 'totalPrice'], 
+            attributes: ['id', 'quantity', 'totalPrice'],
             include: {
               model: db.Item,
               attributes: ['id', 'sku', 'name', 'price', 'stock', 'img_url'],
@@ -182,7 +189,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
                 price: orderItem.Item.price,
               },
               totalPrice: orderItem.totalPrice,
-              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity), 
+              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity),
             };
           }),
           statusInfo: 'Your order has been completed.',
@@ -206,7 +213,7 @@ router.get('/orders', authenticateToken, async (req, res) => {
                 img_url: orderItem.Item.img_url,
               },
               totalPrice: orderItem.totalPrice,
-              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity), 
+              moneySaved: orderItem.totalPrice - (orderItem.Item.price * orderItem.quantity),
             };
           });
         } else if (order.status === 'Cancelled') {

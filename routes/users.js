@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const db = require('../models/db'); 
+const db = require('../models/db');
 const jwt = require('jsonwebtoken');
-const authenticateToken = require('../middleware/authenticateToken'); 
+const authenticateToken = require('../middleware/authenticateToken');
 const isAdmin = require('../middleware/isAdmin');
 
 // POSST Signup
@@ -40,7 +40,6 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ message: "Invalid email format" });
   }
 
-  
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -62,8 +61,6 @@ function isValidEmail(email) {
 }
 
 
-
-
 //POST login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -77,14 +74,14 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-const match = await bcrypt.compare(password, user.password);
-if (!match) {
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
     return res.status(400).json({ message: "Incorrect password" });
-}
+  }
 
-const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
-return res.status(200).json({ message: "User successfully logged in", data: { token } });
+  return res.status(200).json({ message: "User successfully logged in", data: { token } });
 
 
 });

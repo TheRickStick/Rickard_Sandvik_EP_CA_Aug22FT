@@ -78,7 +78,6 @@ router.post('/:id', authenticateToken, async (req, res) => {
 });
 
 
-
 // PUT /order/:id 
 router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {
@@ -100,11 +99,11 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    if (status === 'Cancelled') {
-      if (order.status === 'Cancelled') {
-        return res.status(400).json({ message: 'Order has already been cancelled' });
-      }
+    if (order.status === 'Cancelled') {
+      return res.status(400).json({ message: 'Cannot change status of a cancelled order' });
+    }
 
+    if (status === 'Cancelled') {
       order.status = status;
       await order.save();
 
@@ -119,12 +118,16 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
       return res.status(200).json({ message: 'Order cancelled successfully. Items returned to stock.', order });
     }
 
+    order.status = status;
+    await order.save();
+
     res.json(order);
   } catch (err) {
     console.log('Error:', err);
     res.status(500).json({ message: err.message });
   }
 });
+
 
 
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db');
-const authenticateToken = require('../middleware/authenticateToken'); 
+const authenticateToken = require('../middleware/authenticateToken');
 const isAdmin = require('../middleware/isAdmin');
 
 //POST /category
@@ -17,7 +17,7 @@ router.post('/', authenticateToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-  
+
 // PUT /category/:id
 router.put('/:id', authenticateToken, isAdmin, async (req, res) => {
   try {

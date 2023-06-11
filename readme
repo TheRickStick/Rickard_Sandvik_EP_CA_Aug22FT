@@ -79,7 +79,7 @@ The username for test is MistenkeligRepeterendeHippi, please do not use that whe
  POST /setup
  POST /search
 
- For detailed information about these endpoints (including parameters, request body structure, and responses), please refer to our API Documentation.
+ For detailed information about these endpoints (including parameters, request body structure, and responses), please refer to API Documentation.
  # Postman url: https://documenter.getpostman.com/view/25739749/2s93sZ6u76
 
 
